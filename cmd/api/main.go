@@ -14,7 +14,7 @@ import (
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
-	fmt.Println(username,password)
+	fmt.Println(username, password)
 
 	//// Throws unauthorized error
 	//if username != "jon" || password != "shhh!" {
@@ -35,13 +35,13 @@ func login(c echo.Context) error {
 	key, err := jwt.ParseRSAPrivateKeyFromPEM(keyData)
 
 	if err != nil {
-		fmt.Println(err,"43")
+		fmt.Println(err, "43")
 		return err
 	}
 
 	t, err := token.SignedString(key)
 	if err != nil {
-		fmt.Println(err,"49")
+		fmt.Println(err, "49")
 		return err
 	}
 
@@ -74,9 +74,14 @@ func main() {
 	// Unauthenticated route
 	e.GET("/", accessible)
 
+	keyData, _ := ioutil.ReadFile("sample_key.pub")
+	key, _ := jwt.ParseRSAPublicKeyFromPEM(keyData)
 	// Restricted group
 	r := e.Group("/restricted")
-	r.Use(middleware.JWT([]byte("secret")))
+	r.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey:    key,
+		SigningMethod: "RS256",
+	}))
 	r.GET("", restricted)
 
 	e.Logger.Fatal(e.Start(":1323"))
