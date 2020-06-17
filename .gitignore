@@ -13,3 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+#
+jwtRS256.key
+jwtRS256.key.pub
+.idea
+
+vendor
